@@ -347,18 +347,20 @@ void ScapegoatTree<T>::printPretty(Node<T> *node, int indentLevel, bool isLeftCh
 template<class T>
 ScapegoatTree<T> &ScapegoatTree<T>::operator=(const ScapegoatTree<T> &rhs) {
     /* TODO */
-    removeAllNodes();
+    if(this != &rhs){
+
+        removeAllNodes();
     
-    root = assign(root, rhs.root);
-    upperBound = rhs.upperBound;
+        root = assign(root, rhs.root);
+        upperBound = rhs.upperBound;
+    }
     return *this;
 
 }
 
 template<class T>
 void ScapegoatTree<T>::balance() {
-
-   root = balanceSubTree(root);
+        root = balanceSubTree(root);
 
 }
 
@@ -607,6 +609,7 @@ int ScapegoatTree<T>::insertNodereturnHeight(Node<T> *newNode) const{
 template<class T>
 Node<T>* ScapegoatTree<T>::balanceSubTree(Node<T> *subroot) const{
 
+    if(subroot == NULL || (subroot->left == NULL && subroot->right == NULL)) return subroot;
     int nsize = sizeHelper(subroot);
     Node<T> * parent = findParent(root, subroot);
     T* arr = new T [nsize];
@@ -615,8 +618,9 @@ Node<T>* ScapegoatTree<T>::balanceSubTree(Node<T> *subroot) const{
 
     if(!parent){
         removeAllNodesHelper(subroot);
+        subroot = sortedArrayToBST(arr, 0, nsize-1);
         delete[] arr;
-        return sortedArrayToBST(arr, 0, nsize-1);
+        return subroot;
     }
     else if(parent->left == subroot){
         removeAllNodesHelper(subroot);
@@ -702,10 +706,10 @@ Node<T>* ScapegoatTree<T>::removeHelper( Node<T>* r, const T element) const{
         // node with two children: Get the inorder successor
         // (biggest in the left subtree)
         Node<T>* temp = getMaxHelper(r->left);
- 
+        T tempelement = r->element;
         r->element = temp->element;
- 
-        r->left = removeHelper(r->left, temp->element);
+        temp->element = tempelement;
+        r->left = removeHelper(r->left, element);
     }
     return r;
 
